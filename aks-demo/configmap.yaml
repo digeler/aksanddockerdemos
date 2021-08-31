@@ -1,0 +1,41 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sample
+data:
+  test.txt: | 
+             "just something"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample
+  labels:
+    app: sample
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sample
+  template:
+    metadata:
+      labels:
+        app: sample
+        
+    spec:
+      containers:
+      - name: sample
+        image:  nginx
+        command: [ "sh","-c","while true; do sh echo '1' ; sleep 1h;done" ]            
+        
+        volumeMounts:
+          - name: scripts
+            mountPath: /scripts
+         
+      volumes:
+        - name: scripts
+          configMap:
+             name: sample
+        
